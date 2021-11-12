@@ -2,11 +2,14 @@ const HEIGHT_WINDOW = window.innerHeight;
 const WIDTH_WINDOW = window.innerWidth;
 const SIZE_MATRIX = 6;
 const SIZE_CIRCLES = WIDTH_WINDOW / 20;
-const PADDING =  WIDTH_WINDOW / 15;
+const PADDING =  WIDTH_WINDOW / 17;
 const START_Y = WIDTH_WINDOW / 10;
 const START_X = WIDTH_WINDOW / 2;
+const START_X_MOBILE = WIDTH_WINDOW / 10;
+const START_Y_MOBILE = HEIGHT_WINDOW / 4;
 const WIDTH_LINE = 10;
 const COLOR_TEXT = '#E7B720';
+let size_circles, padding, start_y, start_x;
 let background;
 let circles = [];
 let lines = [];
@@ -35,10 +38,13 @@ class Point {
     destroy(){
         index = 0;
         this.sprite.visible = false;
-        this.y = START_Y;
+        if (WIDTH_WINDOW > HEIGHT_WINDOW)
+            this.y = START_Y;
+        else
+            this.y = START_Y_MOBILE;
         this.sprite.y = 0;
         this.sprite.visible = true;
-        this.color = color[Math.floor(Math.random() * 4)];
+        this.color = color[Math.floor(Math.random() * color.length)];
         this.sprite.loadTexture(this.color);
         this.destroyBool = false;
         this.Move();
@@ -60,6 +66,20 @@ function preload() {
 }
 
 function create() {
+    function scale(){
+        if (WIDTH_WINDOW > HEIGHT_WINDOW){
+            size_circles = SIZE_CIRCLES;
+            padding = PADDING
+            start_y = START_Y;
+            start_x = START_X;
+        }
+        else {
+            size_circles = SIZE_CIRCLES * 2.5;
+            padding = PADDING * 2.5;
+            start_y = START_Y_MOBILE;
+            start_x = START_X_MOBILE;
+        }
+    }
     function initWorld() {
         background = game.add.sprite(0, 0, "background");
         background.width = WIDTH_WINDOW;
@@ -68,27 +88,27 @@ function create() {
     }
    function initCircle() {
         game.debug.lineWidth = WIDTH_LINE;
-        let counter = -PADDING;
+        let counter = -padding;
         for (let i = 0; i < SIZE_MATRIX; i++) {
             circles[i] = [];
         }
         for (let i = 0; i < SIZE_MATRIX; i++) {
-            counter += PADDING;
+            counter += padding;
             for (let j = 0; j < SIZE_MATRIX; j++) {
                 circles[i][j] = new Point();
                 circles[i][j].destroyBool = false;
-                circles[i][j].y = START_Y + counter;
                 circles[i][j].color = color[Math.floor(Math.random() * color.length)];
-                circles[i][j].sprite = game.add.sprite(START_X + j * PADDING, 0, circles[i][j].color);
+                circles[i][j].y = start_y + counter;circles[i][j].sprite = game.add.sprite(start_x + j * padding, 0, circles[i][j].color);
                 circles[i][j].sprite.anchor.set(0.5);
+                circles[i][j].sprite.width = size_circles;
+                circles[i][j].sprite.height = size_circles;
                 circles[i][j].sprite.inputEnabled = true;
                 circles[i][j].sprite.events.onInputOut.add(check, this)
                 circles[i][j].sprite.events.onInputDown.add(click, this)
-                circles[i][j].sprite.width = SIZE_CIRCLES;
-                circles[i][j].sprite.height = SIZE_CIRCLES;
             }
         }
     }
+    scale();
     initWorld();
     initCircle();
 }
@@ -97,10 +117,10 @@ function check() {
         for (let i = 0; i < SIZE_MATRIX; i++)
             for (let j = 0; j < SIZE_MATRIX; j++) {
                 let counter = 0;
-                if (game.input.x > circles[i][j].sprite.x - SIZE_CIRCLES &&
-                    game.input.x < circles[i][j].sprite.x + SIZE_CIRCLES &&
-                    game.input.y > circles[i][j].sprite.y - SIZE_CIRCLES &&
-                    game.input.y < circles[i][j].sprite.y + SIZE_CIRCLES
+                if (game.input.x > circles[i][j].sprite.x - size_circles &&
+                    game.input.x < circles[i][j].sprite.x + size_circles &&
+                    game.input.y > circles[i][j].sprite.y - size_circles &&
+                    game.input.y < circles[i][j].sprite.y + size_circles
                 ) {
                     if (circles[i][j].color === circles[indexArrX[0]][indexArrY[0]].color) {
                         if (lines[0])
@@ -131,10 +151,13 @@ function check() {
 
                                 circles[indexArrX[indexArrX.length - 1]][indexArrY[indexArrY.length - 1]].destroyBool = false;
                                 indexArrX[index] = i;
-                                indexArrY[index] = j
+                                indexArrY[index] = j*
                                 index--;
                                 indexArrX.length--;
                                 indexArrY.length--;
+                                if (indexArrX.length === 1){
+                                    circles[indexArrX[0]][indexArrY[0]].destroyBool = false
+                                }
                                 lines.length--;
                             }
 
@@ -148,10 +171,10 @@ function check() {
 function click() {
     for (let i = 0; i < SIZE_MATRIX; i++)
         for (let j = 0; j < SIZE_MATRIX; j++) {
-        if (game.input.x > circles[i][j].sprite.x - SIZE_CIRCLES &&
-            game.input.x < circles[i][j].sprite.x + SIZE_CIRCLES &&
-            game.input.y > circles[i][j].sprite.y - SIZE_CIRCLES &&
-            game.input.y < circles[i][j].sprite.y + SIZE_CIRCLES
+        if (game.input.x > circles[i][j].sprite.x - size_circles &&
+            game.input.x < circles[i][j].sprite.x + size_circles &&
+            game.input.y > circles[i][j].sprite.y - size_circles &&
+            game.input.y < circles[i][j].sprite.y + size_circles
         ) {
             indexArrX[0] = i;
             indexArrY[0] = j;
@@ -182,7 +205,7 @@ function update() {
                          reserve = circles[i][j];
                          for (let jj = i; jj > 0; jj--) {
                              circles[jj][j] = circles[jj - 1][j];
-                             circles[jj][j].y += PADDING;
+                             circles[jj][j].y += padding;
                              circles[jj][j].Move();
                          }
                          circles[0][j] = reserve;
