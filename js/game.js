@@ -31,7 +31,7 @@ class Point {
     }
     Move(){
          if (this.sprite.y < this.y) {
-            this.sprite.y += 5;
+            this.sprite.y += 10;
             this.bool = true;
         }
     }
