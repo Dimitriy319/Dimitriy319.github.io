@@ -151,13 +151,10 @@ function check() {
 
                                 circles[indexArrX[indexArrX.length - 1]][indexArrY[indexArrY.length - 1]].destroyBool = false;
                                 indexArrX[index] = i;
-                                indexArrY[index] = j*
+                                indexArrY[index] = j;
                                 index--;
                                 indexArrX.length--;
                                 indexArrY.length--;
-                                if (indexArrX.length === 1){
-                                    circles[indexArrX[0]][indexArrY[0]].destroyBool = false
-                                }
                                 lines.length--;
                             }
 
@@ -200,7 +197,7 @@ function update() {
          let reserve;
          for (let i = 0; i < SIZE_MATRIX; i++)
              for (let j = 0; j < SIZE_MATRIX; j++) {
-                 if (indexArrX.length > 1)
+                 if (indexArrX.length > 1) {
                      if (circles[i][j].destroyBool) {
                          reserve = circles[i][j];
                          for (let jj = i; jj > 0; jj--) {
@@ -213,6 +210,10 @@ function update() {
                          score++;
                          scoreText.setText("Points: " + score)
                      }
+                 }
+                 else {
+                     circles[i][j].destroyBool = false
+                 }
              }
          lines.length = 0;
          lines[0] = new Phaser.Line(WIDTH_WINDOW + 100, HEIGHT_WINDOW + 100, WIDTH_WINDOW + 50, HEIGHT_WINDOW + 50);
