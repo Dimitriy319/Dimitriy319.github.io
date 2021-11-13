@@ -122,7 +122,6 @@ function check() {
                     game.input.y > circles[i][j].sprite.y - size_circles &&
                     game.input.y < circles[i][j].sprite.y + size_circles
                 ) {
-                    if (circles[i][j].color === circles[indexArrX[0]][indexArrY[0]].color) {
                         if (lines[0])
                             for (let jj = 0; jj < indexArrX.length; jj++) {
                                 if ((indexArrX[jj] === i && indexArrY[jj] !== j) ||
@@ -137,11 +136,13 @@ function check() {
                                 (indexArrX[indexArrX.length - 1] === i - 1) && (indexArrY[indexArrX.length - 1] === j) ||
                                 (indexArrY[indexArrX.length - 1] === j + 1) && (indexArrX[indexArrX.length - 1] === i) ||
                                 (indexArrY[indexArrX.length - 1] === j - 1) && (indexArrX[indexArrX.length - 1] === i)) {
-                                circles[i][j].destroyBool = true;
-                                index++
-                                indexArrX[index] = i;
-                                indexArrY[index] = j;
-                                lines[index] = new Phaser.Line(circles[i][j].sprite.x, circles[i][j].sprite.y, circles[0][0].sprite.x, circles[0][0].sprite.y);
+                                    if (circles[i][j].color === circles[indexArrX[0]][indexArrY[0]].color) {
+                                        circles[i][j].destroyBool = true;
+                                        index++
+                                        indexArrX[index] = i;
+                                        indexArrY[index] = j;
+                                        lines[index] = new Phaser.Line(circles[i][j].sprite.x, circles[i][j].sprite.y, circles[0][0].sprite.x, circles[0][0].sprite.y);
+                                    }
                             }
                         } else {
                             if (((indexArrX[indexArrX.length - 1] === i + 1) && (indexArrY[indexArrX.length - 1] === j)) ||
@@ -163,7 +164,6 @@ function check() {
 
                 }
             }
-    }
 }
 function click() {
     for (let i = 0; i < SIZE_MATRIX; i++)
@@ -175,7 +175,6 @@ function click() {
         ) {
             indexArrX[0] = i;
             indexArrY[0] = j;
-            circles[i][j].destroyBool = true;
             lines[0] = new Phaser.Line(circles[i][j].sprite.x, circles[i][j].sprite.y, circles[0][0].sprite.x, circles[0][0].sprite.y);        }
         }
 }
@@ -198,6 +197,7 @@ function update() {
          for (let i = 0; i < SIZE_MATRIX; i++)
              for (let j = 0; j < SIZE_MATRIX; j++) {
                  if (indexArrX.length > 1) {
+                     circles[indexArrX[0]][indexArrY[0]].destroyBool = true;
                      if (circles[i][j].destroyBool) {
                          reserve = circles[i][j];
                          for (let jj = i; jj > 0; jj--) {
